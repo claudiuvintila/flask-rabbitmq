@@ -198,13 +198,13 @@ class RabbitMQ(object):
         # register queues and declare all of exchange and queue
         for item in self._rpc_class_list:
             item().declare()
-        for (type, queue_name, exchange_name, routing_key, callback) in self.queue._rpc_class_list:
+        for (type, queue_name, exchange_name, routing_key, durable, callback) in self.queue._rpc_class_list:
             if type == ExchangeType.DEFAULT:
                 if not queue_name:
                     # If queue name is empty, then declare a temporary queue
                     queue_name = self.temporary_queue_declare()
                 else:
-                    self._channel.queue_declare(queue=queue_name, auto_delete=True)
+                    self._channel.queue_declare(queue=queue_name, auto_delete=True, durable=durable)
                     self.basic_consuming(queue_name, callback)
 
             if type == ExchangeType.FANOUT or type == ExchangeType.DIRECT or type == ExchangeType.TOPIC:
